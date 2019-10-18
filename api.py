@@ -1,12 +1,19 @@
 from flask import jsonify, request, Blueprint
-from arrival import get_by_date
+from arrival import get_by_date, get_user_card_id
 
-api_date = Blueprint('api_date', __name__,  static_folder='')
 
-@api_date.route("/api/date")
+api_date = Blueprint('api_date', __name__)
+
+@api_date.route("/api", methods=['GET'])
 def by_date():
 
-    date = request.args.get('date') # #2
+    date = request.args.get('date')
     res = get_by_date(date)
 
     return jsonify(res)
+
+@api_date.route('/api/card_id', methods=['POST'])   
+def by_card_id():
+    card_id = request.form['card_id']
+    res = get_user_card_id(card_id)
+    return res

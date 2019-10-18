@@ -22,8 +22,10 @@
     
     <h1>{{ title }}</h1>
 
-    DATUM: <input id="date" type="text">
-    Vaš ID: <input id="user_id" type="text">
+    DATUM: <input id="date" type="text"><button id="date_submit">GET</button>
+    <br>
+    CARD ID: <input id="card_id" type="text"><button id="card_id_submit">SCAN</button>
+    
 
     <table id="users_time">
         <thead>
@@ -42,12 +44,29 @@
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script>
+
+        $.ajaxSetup({ cache: false });
+
         const $users_time_tbody = $('#users_time_tbody');
         const $date = $('#date');
         const $user_id = $('#user_id');
+        const $card_id = $('#card_id');
+        const $date_submit = $('#date_submit');
+        const $card_id_submit = $('#card_id_submit');
 
-        const get_by_date = (date) => {
-            $.get(`/api/date?date=${date}`, function(data) {
+        // const $scan = $('#scan');
+        // const $demo = $('#demo');
+
+        function getDateForatted () {
+            const D = new Date();
+            const y = D.getFullYear();
+            const m = D.getMonth() + 1;
+            const d = D.getDate();
+            return `${y}-${m}-${d}`;
+        }
+        
+        function get_by_date(date) {
+            $.get(`/api?date=${date}`, function(data) {
                 console.log(data)
                 const TR = data.map(obj => `
                     <tr>
@@ -60,14 +79,24 @@
                 `);
                 if ( $date.val() === '' ) $date.val(date);
                 $users_time_tbody.html(TR)
+            });
+        }
+
+        function post_card_id(card_id) {
+            $.post('/api/card_id', {card_id: card_id}, function() {
+                get_by_date( $date.val() );
             })
         }
 
-        $date.on('change', function() {
-            get_by_date(this.value);
-        })
+        $date_submit.on('click', function() {
+            get_by_date( $date.val() );
+        });
 
-        get_by_date("2019-10-14");
+        $card_id_submit.on('click', function() {
+            post_card_id( $card_id.val() );
+        });
+
+        get_by_date(getDateForatted());
 
     </script>
 
