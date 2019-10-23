@@ -24,8 +24,8 @@
 
     DATUM: <input id="date" type="text"><button id="date_submit">GET</button>
     <br>
-    CARD ID: <input id="card_id" type="text"><button id="card_id_submit">SCAN</button>
-    
+    CARD ID: <input id="card_id" type="text"><button id="card_id_submit" >SCAN</button>
+    <!-- onClick="window.location.reload();" -->
 
     <table id="users_time">
         <thead>
@@ -57,7 +57,7 @@
         // const $scan = $('#scan');
         // const $demo = $('#demo');
 
-        function getDateForatted () {
+        function getDateFormatted () {
             const D = new Date();
             const y = D.getFullYear();
             const m = D.getMonth() + 1;
@@ -67,25 +67,28 @@
         
         function get_by_date(date) {
             $.get(`/api?date=${date}`, function(data) {
-                console.log(data)
-                const TR = data.map(obj => `
-                    <tr>
-                        <td>${obj.name}</td>
-                        <td>${obj.surname}</td>
-                        <td class="${obj.is_in == 1 ? "green" : "red"}">${obj.is_in == 1 ? "Dolazak" : "Odlazak"}</td>
-                        <td>${obj.date}</td>
-                        <td>${obj.time}</td>
-                    </tr>
-                `);
+                let TR;
+                if (!data.length) {
+                    TR = `<tr><td>Nema zapisa za datum ${date}</td></tr>`;
+                } else {
+                    // console.log(data)
+                    TR = data.map(obj => `
+                        <tr>
+                            <td>${obj.name}</td>
+                            <td>${obj.surname}</td>
+                            <td class="${obj.is_in == 1 ? "green" : "red"}">${obj.is_in == 1 ? "Dolazak" : "Odlazak"}</td>
+                            <td>${obj.date}</td>
+                            <td>${obj.time}</td>
+                        </tr>
+                    `);
+                }
                 if ( $date.val() === '' ) $date.val(date);
                 $users_time_tbody.html(TR)
             });
         }
 
-        function post_card_id(card_id) {
-            $.post('/api/card_id', {card_id: card_id}, function() {
-                get_by_date( $date.val() );
-            })
+        function post_card_id(card_id, cb) {
+            $.post('/api/card_id', {card_id: card_id}, cb);
         }
 
         $date_submit.on('click', function() {
@@ -93,10 +96,14 @@
         });
 
         $card_id_submit.on('click', function() {
-            post_card_id( $card_id.val() );
+            $card_id_submit.prop("disabled", true);
+            post_card_id( $card_id.val(), function() {
+                get_by_date( $date.val() );
+                $card_id_submit.prop("disabled", false);
+            });
         });
 
-        get_by_date(getDateForatted());
+        get_by_date(getDateFormatted());
 
     </script>
 

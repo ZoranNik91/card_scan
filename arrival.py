@@ -10,19 +10,20 @@ import json
 is_in = 1
 # Connect to DB and set cursor
 db = MC.connect(host='localhost', database='employees', user='admin', password='admin')
-cursor = db.cursor() #Allows Python code to execute SQL command in a database session
-
 
 def get_by_date(date):
     
+    cursor = db.cursor()
     cursor.execute(f"""
             SELECT name, surname, times.time, times.is_in, times.user_id FROM users
             JOIN times ON times.user_id = users.id
             WHERE time BETWEEN '{date} 00:00:00' AND '{date} 23:59:59'
-            ORDER BY times.time DESC
+            ORDER BY times.time DESC, times.id DESC
         """)
     
     rows = cursor.fetchall()
+
+    cursor.close()
 
     res = []
     for row in rows:
@@ -48,29 +49,37 @@ def insert_time(user_id):
     res_obj = {}
     is_in = 1
 
+    cursor = db.cursor()
     # format() - method lets us concatenate elements within a string through positional formatting
     cursor.execute("SELECT * FROM times WHERE user_id = {}".format(user_id))  
-    cursor.fetchall()
+    rows = cursor.fetchall()
+    cursor.close()
+    
     # check if we have any record of user_id in times table (cursor.rowcount == 0)
-    if (cursor.rowcount == 0):      # Cursor.rowcount property returns number of fetched rows
+    if (len(rows) == 0):      # Cursor.rowcount property returns number of fetched rows
         is_in = 1
         res_obj['message'] = "Welcome user "
 
     # Check if user has entered or is leaving (cursor.rowcount %2 = 0 or 1)
     else:
-        is_in = (cursor.rowcount + 1) % 2
+        is_in = (len(rows) + 1) % 2
         res_obj['message'] = 'Signed in' if is_in else 'Signed out'
+
+
         
     # Save new record
+    cursor = db.cursor()
     new_query = "INSERT INTO times (is_in, user_id) VALUES (%s, %s)"
     query = (is_in, user_id)
     cursor.execute(new_query, query)
     db.commit()
-    
+    cursor.close()
 
     return res_obj
 
 def insert_user(name,surname,email,phone,card_id):
+
+    cursor = db.cursor()
     res_obj = {}
     res_obj['message'] = "User not inserted"
 
@@ -84,7 +93,6 @@ def insert_user(name,surname,email,phone,card_id):
     print(f"User {name} {surname} was created!")
     db.commit()
     cursor.close()
-    db.close()
 
     res_obj['message'] = "User inserted" # TODO: always success kinda sucks
 
@@ -93,9 +101,11 @@ def insert_user(name,surname,email,phone,card_id):
 
 def get_user_card_id(card_id):
     
+    cursor = db.cursor()
     res_obj = {}
     cursor.execute(f"SELECT * FROM users WHERE card_id = {card_id}")
     row = cursor.fetchone()
+    cursor.close()
 
     # Checks if we have user or not, if not posibility to create on
     if (row == None):
@@ -113,7 +123,6 @@ def get_user_card_id(card_id):
         res_obj['user'] = row
 
         insert_time(user_id)
-
     
     return res_obj
 
