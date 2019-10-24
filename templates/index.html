@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="static/style.css">
     <title>{{ title }}</title>
     <style>
         table {
@@ -19,6 +20,30 @@
     </style>
 </head>
 <body>
+        <input id="Popup-ckb" type="checkbox" />
+        <div class="PopupWrapper">
+          <div class="Popup">
+            <label for="Popup-ckb">
+              <a class="Popup-close">&times;</a>
+            </label>
+            <div class="Popup-content">
+            <h1>ovdje ide forma</h1>
+            <label class="btn" for="Popup-ckb"> Odustani</label>
+            <script>
+            function closePopup() {
+                    $("#Popup-ckb").prop('checked', false)
+}
+            </script>
+              
+            </div>
+          </div>
+        </div>
+    
+        
+        
+        
+        
+    <label class="btn" for="Popup-ckb"> REGISTER USER</label> 
     
     <h1>{{ title }}</h1>
 
@@ -105,7 +130,7 @@
         $card_id_submit.on('click', function() {
             $card_id_submit.prop("disabled", true);
             post_card_id( $card_id.val(), function() {
-                get_by_date( $date.val() );
+                get_by_date( $date.val() === '' ? alert("Želite li registrirati novog korisnika ?") : $date.val());
                 $card_id_submit.prop("disabled", false);
             });
         });
