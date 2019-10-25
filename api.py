@@ -1,5 +1,5 @@
 from flask import jsonify, request, Blueprint
-from arrival import get_by_date, get_user_card_id
+from arrival import get_by_date, get_user_card_id, insert_user
 
 
 api_date = Blueprint('api_date', __name__)
@@ -16,4 +16,10 @@ def by_date():
 def by_card_id():
     card_id = request.form['card_id']
     res = get_user_card_id(card_id)
+    return res
+
+@api_date.route('/api/register', methods=['POST'])
+def by_register():
+    reg = request.form['register']
+    # res = insert_user(reg)
     return res

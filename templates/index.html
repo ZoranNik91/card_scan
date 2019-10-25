@@ -20,28 +20,31 @@
     </style>
 </head>
 <body>
-        <input id="Popup-ckb" type="checkbox" />
-        <div class="PopupWrapper">
-          <div class="Popup">
+
+    <input id="Popup-ckb" type="checkbox" />
+    <div class="PopupWrapper">
+        <div class="Popup">
             <label for="Popup-ckb">
-              <a class="Popup-close">&times;</a>
+                <a class="Popup-close">&times;</a>
             </label>
             <div class="Popup-content">
-            <h1>ovdje ide forma</h1>
-            <label class="btn" for="Popup-ckb"> Odustani</label>
-            <script>
-            function closePopup() {
-                    $("#Popup-ckb").prop('checked', false)
-}
-            </script>
-              
+                <h1 id="Popup-title">Registracija korisnika</h1>
+
+                <form id="reg-form">
+
+                    <input id="reg-name" type="text" placeholder="Ime">
+                    <input id="reg-surname" type="text" placeholder="Prezime">
+                    <input id="reg-email" type="text" placeholder="Email">
+                    <input id="reg-tel" type="text" placeholder="Tel">
+   
+                    <button id="reg-sub" type="submit">Registriraj</button>
+                </form >
+
+
+                <label class="btn" for="Popup-ckb"> Odustani</label>              
             </div>
-          </div>
         </div>
-    
-        
-        
-        
+    </div>
         
     <label class="btn" for="Popup-ckb"> REGISTER USER</label> 
     
@@ -123,19 +126,34 @@
             $.post('/api/card_id', {card_id: card_id}, cb);
         }
 
+        function post_register(formData) {
+            $.post('/api/register', formData, cb);
+        }
+
         $date_submit.on('click', function() {
             get_by_date( $date.val() );
         });
 
         $card_id_submit.on('click', function() {
             $card_id_submit.prop("disabled", true);
-            post_card_id( $card_id.val(), function() {
-                get_by_date( $date.val() === '' ? alert("Želite li registrirati novog korisnika ?") : $date.val());
+            post_card_id( $card_id.val(), function(data) {
+                console.log(data.status);
+                if(data.status === "error") {
+                    $("#Popup-ckb").prop("checked", true);
+                    $("#Popup-title").text("Kartica ne postoji. Registracija korisnika")
+                }
+                get_by_date( $date.val()); // === 'error' ? alert("Želite li registrirati novog korisnika ?") : $date.val() // BUG je u tome što val() vraća isti datum za nepostojeće card id
                 $card_id_submit.prop("disabled", false);
             });
         });
 
         get_by_date(getDateFormatted());
+
+
+        $("#reg-form").on("submit", function() {
+            const fData = new FormData(this);
+            post_register(fData);
+        });
 
     </script>
 

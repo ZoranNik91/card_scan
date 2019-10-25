@@ -98,7 +98,6 @@ def insert_user(name,surname,email,phone,card_id):
 
     return res_obj
 
-
 def get_user_card_id(card_id):
     
     cursor = db.cursor()
