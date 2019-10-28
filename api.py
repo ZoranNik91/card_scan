@@ -14,12 +14,17 @@ def by_date():
 
 @api_date.route('/api/card_id', methods=['POST'])   
 def by_card_id():
-    card_id = request.form['card_id']
+    card_id = request.form['kurac']
     res = get_user_card_id(card_id)
     return res
 
 @api_date.route('/api/register', methods=['POST'])
 def by_register():
-    reg = request.form['register']
-    # res = insert_user(reg)
+    name = request.form['name']
+    surname = request.form['surname']
+    email = request.form['email']
+    phone = request.form['tel']
+    card_id = request.form['card_id']
+    res = insert_user(name,surname,email,phone,card_id)
+    
     return res

@@ -32,10 +32,10 @@
 
                 <form id="reg-form">
 
-                    <input id="reg-name" type="text" placeholder="Ime">
-                    <input id="reg-surname" type="text" placeholder="Prezime">
-                    <input id="reg-email" type="text" placeholder="Email">
-                    <input id="reg-tel" type="text" placeholder="Tel">
+                    <input name="name" id="reg-name" type="text" placeholder="Ime">
+                    <input name="surname" id="reg-surname" type="text" placeholder="Prezime">
+                    <input name="email" id="reg-email" type="text" placeholder="Email">
+                    <input name="tel" id="reg-tel" type="text" placeholder="Tel">
    
                     <button id="reg-sub" type="submit">Registriraj</button>
                 </form >
@@ -46,8 +46,6 @@
         </div>
     </div>
         
-    <label class="btn" for="Popup-ckb"> REGISTER USER</label> 
-    
     <h1>{{ title }}</h1>
 
     DATUM: <input id="date" type="text"><button id="date_submit">GET</button>
@@ -122,12 +120,20 @@
             });
         }
 
-        function post_card_id(card_id, cb) {
-            $.post('/api/card_id', {card_id: card_id}, cb);
+        function post_card_id(cid, cb) {
+            $.post('/api/card_id', {kurac: cid}, cb);
         }
 
-        function post_register(formData) {
-            $.post('/api/register', formData, cb);
+        function post_register(formData, cb) {
+            $.ajax({
+                url: '/api/register',
+                data: formData,
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                success: cb
+            });
+
         }
 
         $date_submit.on('click', function() {
@@ -142,7 +148,7 @@
                     $("#Popup-ckb").prop("checked", true);
                     $("#Popup-title").text("Kartica ne postoji. Registracija korisnika")
                 }
-                get_by_date( $date.val()); // === 'error' ? alert("Želite li registrirati novog korisnika ?") : $date.val() // BUG je u tome što val() vraća isti datum za nepostojeće card id
+                get_by_date( $date.val()); 
                 $card_id_submit.prop("disabled", false);
             });
         });
@@ -150,9 +156,13 @@
         get_by_date(getDateFormatted());
 
 
-        $("#reg-form").on("submit", function() {
+        $("#reg-form").on("submit", function(e) {
+            e.preventDefault();
             const fData = new FormData(this);
-            post_register(fData);
+            fData.append('card_id',$card_id.val())    
+            post_register(fData, function(data) {
+                console.log(data);
+            });
         });
 
     </script>
