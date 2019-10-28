@@ -14,7 +14,7 @@ def by_date():
 
 @api_date.route('/api/card_id', methods=['POST'])   
 def by_card_id():
-    card_id = request.form['kurac']
+    card_id = request.form['card_id']
     res = get_user_card_id(card_id)
     return res
 
