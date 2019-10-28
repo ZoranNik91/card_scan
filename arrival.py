@@ -77,7 +77,7 @@ def insert_time(user_id):
 
     return res_obj
 
-def insert_user(name,surname,email,phone,card_id):
+def insert_user(name, surname, email, phone, card_id):
 
     cursor = db.cursor()
     res_obj = {}

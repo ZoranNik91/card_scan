@@ -25,6 +25,6 @@ def by_register():
     email = request.form['email']
     phone = request.form['tel']
     card_id = request.form['card_id']
-    res = insert_user(name,surname,email,phone,card_id)
+    res = insert_user(name, surname, email, phone, card_id)
     
     return res
