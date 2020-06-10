@@ -70,7 +70,7 @@ Run in terminal arrival.py to see how it works. (In our case we input card ID fr
 python arrival.py
 ```
 
-Adding one argument next to the arrival.py will show all users loged in on hat date.
+Adding one argument next to the arrival.py will show all users loged in on that date.
 
 ```
 python arrival.py 2019-10-24
